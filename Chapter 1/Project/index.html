@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz</title>
+
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            margin-top: 10vh;
+            gap: 2vh;
+            font-size: 30px;
+            margin-left: 30vw;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 5vh;
+        }
+
+        .inputs {
+            display: flex;
+            flex-direction: column;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="question"></div>
+        <div class="inputs">
+
+        </div>
+        <div class="buttons">
+
+            <div class="previous">
+                <button>previous</button>
+            </div>
+            <div class="next">
+                <button>next</button>
+            </div>
+        </div>
+        <div class="submit">
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+    {
+        id: 1,
+        question: "Which language is used for styling web pages?",
+        options: ["HTML", "JQuery", "CSS", "XML"],
+        answer: 2,
+        selected: null
+    },
+    {
+        id: 2,
+        question: "Which is not a JavaScript framework?",
+        options: ["React", "Angular", "Vue", "Django"],
+        answer: 3,
+        selected: null
+    },
+    {
+        id: 3,
+        question: "What does HTML stand for?",
+        options: [
+            "Hyper Trainer Marking Language",
+            "Hyper Text Markup Language",
+            "Hyper Text Marketing Language",
+            "High Text Markup Language"
+        ],
+        answer: 1,
+        selected: null
+    },
+    {
+        id: 4,
+        question: "Which company developed Java?",
+        options: ["Sun Microsystems", "Microsoft", "Apple", "Google"],
+        answer: 0,
+        selected: null
+    },
+    {
+    id: 5,
+    question: "Which language is used for backend development?",
+    options: ["HTML", "CSS", "JavaScript", "PHP"],
+    answer: 3,
+    selected: null
+},
+{
+    id: 6,
+    question: "Which language is mainly used for styling web pages?",
+    options: ["JavaScript", "Python", "CSS", "Java"],
+    answer: 2,
+    selected: null
+},
+    {
+        id: 7,
+        question: "Which of the following is a NoSQL database?",
+        options: ["MySQL", "MongoDB", "PostgreSQL", "Oracle"],
+        answer: 1,
+        selected: null
+    },
+    {
+        id: 8,
+        question: "Which keyword is used to declare a constant in JavaScript?",
+        options: ["let", "var", "const", "static"],
+        answer: 2,
+        selected: null
+    },
+    {
+        id: 9,
+        question: "Which CSS property controls the text size?",
+        options: ["font-size", "text-style", "text-size", "font-weight"],
+        answer: 0,
+        selected: null
+    },
+    {
+        id: 10,
+        question: "Which of the following is used to create a responsive design?",
+        options: ["Bootstrap", "Photoshop", "Angular", "Node.js"],
+        answer: 0,
+        selected: null
+    }
+];
+
+
+        let index = 0
+        let score = 0
+
+        showData(index)
+
+        function showData(index) {
+            let question = document.querySelector(".question")
+            let submit = document.querySelector(".submit")
+            question.innerText = questions[index].id + "]  " + questions[index].question
+            let options = document.querySelector(".inputs")
+            options.innerHTML = ''
+            
+            for (let i = 0; i < 4; i++) {
+let checked = questions[index].selected === i ? "checked" : ""
+                options.innerHTML = options.innerHTML + `<div>
+                <input name="question${index}" value="${i}" type="radio" ${checked}>
+                <label for="${i}" >${questions[index].options[i]}</label>
+            </div>`
+            }
+
+            if (index == questions.length - 1) {
+                submit.innerHTML = `<button class="quizEnd">Submit Quiz</button>`;
+
+                document.querySelector(".quizEnd").addEventListener("click", () => {
+                    checkAnswer()
+                    score = questions.reduce((acc, q) => acc + (q.selected === q.answer ? 1 : 0), 0);
+    document.querySelector(".container").innerHTML = `
+        <h2>Your Score: ${score} / ${questions.length}</h2>
+    `;
+                });
+            } else {
+                submit.innerHTML = ""; 
+            }
+        }
+
+        function checkAnswer() {
+    let selected = document.querySelector('input[type="radio"]:checked')
+    if (selected) {
+        questions[index].selected = parseInt(selected.value)
+    }
+}
+
+        // function checkAnswer() {
+        //     let optionDiv = document.querySelector(".inputs").children[questions[index].answer]
+        //     let inputEl = optionDiv.querySelector("input")
+        //     // console.log(inputEl.checked)
+
+        //     if (inputEl.checked) {
+        //         score++;
+        //     }
+        // }
+
+        document.querySelector(".next").addEventListener("click", () => {
+            // console.log("hello")
+            checkAnswer()
+            if (index != questions.length - 1) {
+                index++
+            }
+            showData(index)
+        })
+
+        document.querySelector(".previous").addEventListener("click", () => {
+            if (index != 0) {
+                index--
+            }
+            showData(index)
+        })
+
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        .flex{
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="flex">
+        <div class="dec">
+            <button>-</button>
+        </div>
+        <div class="val">0</div>
+        <div class="inc">
+            <button>+</button>
+        </div>
+    </div>
+
+    <script>
+        let dec = document.querySelector(".dec")
+        let inc = document.querySelector(".inc")
+        let valElement = document.querySelector(".val")
+        let val = parseInt(valElement.innerText)
+
+        dec.addEventListener("click", ()=>{
+            val -= 1
+            valElement.innerText = val
+        })
+        inc.addEventListener("click", ()=>{
+            val += 1
+            valElement.innerText = val
+        })
+    </script>
+</body>
+</html>
