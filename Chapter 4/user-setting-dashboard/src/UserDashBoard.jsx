@@ -109,7 +109,7 @@ const UserDashboard = () => {
         </button>
       </form>
       
-      <div className="w-1/2 flex items-center justify-center">
+      <div className="w-1/2 flex items-center justify-center pb-64">
         <img
           className="w-[300px] h-[300px] rounded-full object-cover border-4 border-gray-200 dark:border-gray-600 shadow-lg"
           src={user.profilePic}
