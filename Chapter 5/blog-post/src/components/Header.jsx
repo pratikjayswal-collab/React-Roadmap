@@ -4,14 +4,14 @@ import { User, LogOut } from "lucide-react";
 import { useNavigate } from "react-router";
 
 const Header = () => {
-  const { user, signOut } = useAuth();
-  const [showUserMenu, setShowUserMenu] = useState(false);
-  const navigate = useNavigate();
+  const { user, signOut } = useAuth()
+  const [showUserMenu, setShowUserMenu] = useState(false)
+  const navigate = useNavigate()
 
   const handleLogout = async () => {
-    await signOut();
-    setShowUserMenu(false);
-  };
+    await signOut()
+    setShowUserMenu(false)
+  }
 
   const handleClick = () => { 
     navigate('/')
@@ -58,7 +58,7 @@ const Header = () => {
         </div>
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

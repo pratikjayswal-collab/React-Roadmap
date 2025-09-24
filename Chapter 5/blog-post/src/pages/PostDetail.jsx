@@ -7,77 +7,75 @@ import CommentSection from '../components/CommentSection';
 import { staticPosts, staticComments } from '../data/staticPosts';
 
 const PostDetail = () => {
-  const { id } = useParams();
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const [post, setPost] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { id } = useParams()
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  const [post, setPost] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     const fetchPost = async () => {
       setLoading(true);
       try {
-        // First check if it's a static post
-        const staticPost = staticPosts.find(p => p.id === id);
+
+        const staticPost = staticPosts.find(p => p.id === id)
         if (staticPost) {
-          setPost(staticPost);
-          setLoading(false);
-          return;
+          setPost(staticPost)
+          setLoading(false)
+          return
         }
 
-        // If not static, fetch from Firestore
-        const { post, error } = await firestoreService.posts.getById(id);
+        const { post, error } = await firestoreService.posts.getById(id)
         if (error) {
-          setError(error);
+          setError(error)
         } else {
-          setPost(post);
+          setPost(post)
         }
       } catch (err) {
-        setError(err.message);
+        setError(err.message)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchPost();
-  }, [id]);
+    fetchPost()
+  }, [id])
 
   const handleDelete = async () => {
-    // Prevent deletion of static posts
     if (post?.isStatic) {
-      alert('Cannot delete static posts');
-      return;
+      alert('Cannot delete static posts')
+      return
     }
 
     if (window.confirm('Are you sure you want to delete this post?')) {
-      const { error } = await firestoreService.posts.delete(id);
+      const { error } = await firestoreService.posts.delete(id)
       if (!error) {
-        navigate('/');
+        navigate('/')
       } else {
-        alert('Error deleting post: ' + error);
+        alert('Error deleting post: ' + error)
       }
     }
   };
 
   const formatDate = (timestamp) => {
     if (!timestamp) return '';
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
-    });
-  };
+    })
+  }
 
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
-    );
+    )
   }
 
   if (error || !post) {
@@ -90,24 +88,22 @@ const PostDetail = () => {
           ← Back to Home
         </Link>
       </div>
-    );
+    )
   }
 
-  const isAuthor = user && user.uid === post.authorId;
-  const canEdit = isAuthor && !post.isStatic; // Can't edit static posts
+  const isAuthor = user && user.uid === post.authorId
+  const canEdit = isAuthor && !post.isStatic
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* Navigation */}
       <div className="mb-6">
         <Link to="/" className="text-blue-600 hover:underline">
           ← Back to Posts
         </Link>
       </div>
 
-      {/* Post Content */}
       <article className="bg-white rounded-lg shadow-md p-8 mb-8">
-        {/* Post Header */}
+
         <header className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">{post.title}</h1>
           
@@ -146,7 +142,6 @@ const PostDetail = () => {
           </div>
         </header>
 
-        {/* Tags */}
         {post.tags && post.tags.length > 0 && (
           <div className="mb-6">
             <div className="flex flex-wrap gap-2">
@@ -162,7 +157,6 @@ const PostDetail = () => {
           </div>
         )}
 
-        {/* Post Content */}
         <div className="prose max-w-none">
           <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
             {post.content}
@@ -170,13 +164,11 @@ const PostDetail = () => {
         </div>
       </article>
 
-      {/* Nested Route Outlet (for comments) */}
       <Outlet />
 
-      {/* Comments Section */}
       <CommentSection postId={id} isStatic={post.isStatic} />
     </div>
-  );
-};
+  )
+}
 
-export default PostDetail;
+export default PostDetail

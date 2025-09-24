@@ -1,4 +1,3 @@
-// src/pages/CreatePost.jsx
 import React from 'react';
 import { useNavigate } from 'react-router';
 import PostForm from '../components/PostForm';
@@ -6,22 +5,22 @@ import { firestoreService } from '../services/fireStoreService';
 import { useAuth } from '../contexts/AuthContext';
 
 const CreatePost = () => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
+  const navigate = useNavigate()
+  const { user } = useAuth()
 
   const handleSubmit = async (postData) => {
     const { id, error } = await firestoreService.posts.create({
       ...postData,
       authorId: user.uid,
       authorName: user.displayName || user.email
-    });
+    })
 
     if (error) {
-      throw new Error(error);
+      throw new Error(error)
     } else {
-      navigate(`/post/${id}`);
+      navigate(`/post/${id}`)
     }
-  };
+  }
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -35,7 +34,7 @@ const CreatePost = () => {
         submitButtonText="Publish Post"
       />
     </div>
-  );
-};
+  )
+}
 
-export default CreatePost;
+export default CreatePost

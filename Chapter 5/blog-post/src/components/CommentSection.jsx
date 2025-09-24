@@ -1,4 +1,3 @@
-// src/components/CommentSection.jsx
 import React, { useState, useEffect } from 'react';
 import { firestoreService } from '../services/fireStoreService';
 import { useAuth } from '../contexts/AuthContext';
@@ -13,14 +12,12 @@ const CommentSection = ({ postId, isStatic = false }) => {
 
   useEffect(() => {
     if (isStatic) {
-      // For static posts, load static comments
       const postComments = staticComments[postId] || [];
       setComments(postComments);
       setLoading(false);
       return;
     }
 
-    // For dynamic posts, set up real-time listener for comments
     const unsubscribe = firestoreService.comments.onSnapshot(postId, (comments) => {
       setComments(comments);
       setLoading(false);
@@ -33,7 +30,6 @@ const CommentSection = ({ postId, isStatic = false }) => {
     e.preventDefault();
     if (!newComment.trim() || !user) return;
 
-    // For static posts, prevent commenting
     if (isStatic) {
       alert('Comments are disabled for featured posts');
       return;
@@ -73,7 +69,6 @@ const CommentSection = ({ postId, isStatic = false }) => {
         Comments ({comments.length})
       </h3>
 
-      {/* Comment Form */}
       {user && !isStatic ? (
         <form onSubmit={handleSubmitComment} className="mb-8">
           <div className="mb-4">
@@ -108,7 +103,6 @@ const CommentSection = ({ postId, isStatic = false }) => {
         </div>
       ) : null}
 
-      {/* Comments List */}
       {loading ? (
         <div className="flex justify-center py-4">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>

@@ -12,18 +12,18 @@ import { getAuth, connectAuthEmulator } from "firebase/auth";           // For F
 // Your web app's Firebase configuration
 // (This is the exact object you provided)
 const firebaseConfig = {
-  apiKey: "AIzaSyAHnwK5qaKs8nxBmjbymKGU6dL43-dzN50",
-  authDomain: "blog-post-e1c7a.firebaseapp.com",
-  projectId: "blog-post-e1c7a",
-  storageBucket: "blog-post-e1c7a.firebasestorage.app",
-  messagingSenderId: "1083314331640",
-  appId: "1:1083314331640:web:9965eee196f1238fa5c00d",
-  measurementId: "G-F6XJ6F8YS2"
-};
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+}
 
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig)
 
-export const analytics = getAnalytics(app);
+export const analytics = getAnalytics(app)
 
 // Initialize and export the other Firebase services you'll use:
 export const db = getFirestore(app);      // This is your Cloud Firestore instance

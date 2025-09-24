@@ -1,4 +1,3 @@
-// src/pages/UserProfile.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
@@ -7,83 +6,81 @@ import { updateProfile } from 'firebase/auth';
 import PostCard from '../components/PostCard';
 
 const UserProfile = () => {
-  const { user } = useAuth();
-  const [userPosts, setUserPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [editingProfile, setEditingProfile] = useState(false);
+  const { user } = useAuth()
+  const [userPosts, setUserPosts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [editingProfile, setEditingProfile] = useState(false)
   const [profileData, setProfileData] = useState({
     displayName: user?.displayName || ''
-  });
-  const [updating, setUpdating] = useState(false);
+  })
+  const [updating, setUpdating] = useState(false)
 
   useEffect(() => {
     const fetchUserPosts = async () => {
-      if (!user) return;
-      
-      setLoading(true);
-      const { posts, error } = await firestoreService.posts.getByUser(user.uid);
+      if (!user) return      
+      setLoading(true)
+      const { posts, error } = await firestoreService.posts.getByUser(user.uid)
       if (error) {
-        setError(error);
+        setError(error)
       } else {
-        setUserPosts(posts);
+        setUserPosts(posts)
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    fetchUserPosts();
-  }, [user]);
+    fetchUserPosts()
+  }, [user])
 
   const handleUpdateProfile = async (e) => {
-    e.preventDefault();
-    setUpdating(true);
+    e.preventDefault()
+    setUpdating(true)
     
     try {
       await updateProfile(user, {
         displayName: profileData.displayName.trim()
-      });
+      })
       
-      setEditingProfile(false);
-      setError(null);
+      setEditingProfile(false)
+      setError(null)
     } catch (err) {
-      setError('Failed to update profile: ' + err.message);
+      setError('Failed to update profile: ' + err.message)
     } finally {
-      setUpdating(false);
+      setUpdating(false)
     }
-  };
+  }
 
   const handleDeletePost = async (postId) => {
     if (window.confirm('Are you sure you want to delete this post?')) {
-      const { error } = await firestoreService.posts.delete(postId);
+      const { error } = await firestoreService.posts.delete(postId)
       if (!error) {
-        setUserPosts(prev => prev.filter(post => post.id !== postId));
+        setUserPosts(prev => prev.filter(post => post.id !== postId))
       } else {
-        alert('Error deleting post: ' + error);
+        alert('Error deleting post: ' + error)
       }
     }
-  };
+  }
 
   const formatDate = (timestamp) => {
-    if (!timestamp) return '';
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    if (!timestamp) return ''
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
-    });
-  };
+    })
+  }
 
   if (!user) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-600">Please sign in to view your profile.</p>
       </div>
-    );
+    )
   }
 
   return (
     <div className="max-w-6xl mx-auto">
-      {/* Profile Header */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <div className="flex justify-between items-start">
           <div className="flex-1">
@@ -155,7 +152,6 @@ const UserProfile = () => {
         )}
       </div>
 
-      {/* User Posts Section */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Your Posts</h2>
@@ -219,7 +215,7 @@ const UserProfile = () => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UserProfile;
+export default UserProfile

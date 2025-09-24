@@ -1,4 +1,3 @@
-// src/components/PostForm.jsx
 import React, { useState } from 'react';
 
 const PostForm = ({ initialData = null, onSubmit, submitButtonText = 'Submit' }) => {
