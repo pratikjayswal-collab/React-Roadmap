@@ -8,14 +8,14 @@ import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCw7wwVDyZQMz98pUKXyP3PhJnGHSGQTj0",
-  authDomain: "note-taking-app-a6a0c.firebaseapp.com",
-  projectId: "note-taking-app-a6a0c",
-  storageBucket: "note-taking-app-a6a0c.firebasestorage.app",
-  messagingSenderId: "1031197939380",
-  appId: "1:1031197939380:web:6244b87b0691714e6e69e1",
-  measurementId: "G-6259ESRKSP"
-};
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
