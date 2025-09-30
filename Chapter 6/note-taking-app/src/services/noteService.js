@@ -20,13 +20,13 @@ export const noteService = {
     try {
       const q = query(
         collection(db, COLLECTION_NAME),
-        where("userId", "==", userId),
+        where("ownerId", "==", userId),   // 🔥 changed userId -> ownerId
         orderBy("createdAt", "desc")
       );
       const querySnapshot = await getDocs(q);
       const notes = [];
-      querySnapshot.forEach((doc) => {
-        notes.push({ id: doc.id, ...doc.data() });
+      querySnapshot.forEach((docSnap) => {
+        notes.push({ id: docSnap.id, ...docSnap.data() });
       });
       return notes;
     } catch (error) {
@@ -40,7 +40,7 @@ export const noteService = {
     try {
       const docRef = await addDoc(collection(db, COLLECTION_NAME), {
         text,
-        userId,
+        ownerId: userId,                  // 🔥 ensure ownerId matches auth.uid
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
@@ -49,7 +49,7 @@ export const noteService = {
       return {
         id: docRef.id,
         text,
-        userId,
+        ownerId: userId,
         createdAt: new Date(),
         updatedAt: new Date()
       };
