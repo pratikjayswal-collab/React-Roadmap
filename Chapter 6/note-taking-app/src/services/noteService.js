@@ -20,7 +20,7 @@ export const noteService = {
     try {
       const q = query(
         collection(db, COLLECTION_NAME),
-        where("ownerId", "==", userId),   // 🔥 changed userId -> ownerId
+        where("ownerId", "==", userId),  
         orderBy("createdAt", "desc")
       );
       const querySnapshot = await getDocs(q);
@@ -34,6 +34,22 @@ export const noteService = {
       throw error;
     }
   },
+
+searchNotes: async (userId, searchQuery) => {
+  const notesRef = collection(db, COLLECTION_NAME)
+  const q = query(
+    notesRef,
+    where('ownerId', '==', userId), 
+    orderBy('createdAt', 'desc')
+  )
+  
+  const snapshot = await getDocs(q)
+  const allNotes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+  
+  return allNotes.filter(note => 
+    note.text.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+},
 
   // Add a new note
   addNote: async (userId, text) => {

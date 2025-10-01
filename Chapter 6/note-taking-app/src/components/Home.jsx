@@ -13,17 +13,21 @@ const Home = () => {
   const [mockNotesLoaded, setMockNotesLoaded] = useState(false)
   const ref = useRef(null)
 
-  const [enabled, setEnabled] = useState(false) 
-  
+  const [enabled, setEnabled] = useState(false)
+
+  const [searchQuery, setSearchQuery] = useState("")
+  const [isSearching, setIsSearching] = useState(false)
+  const searchTimeOutRef = useRef(null)
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1)
   const notesPerPage = 10
-  
-    // Calculate pagination
-    const startIndex = (currentPage - 1) * notesPerPage
-    const endIndex = startIndex + notesPerPage
-    const currentNotes = notes.slice(startIndex, endIndex)
-    const totalPages = Math.ceil(notes.length / notesPerPage)
+
+  // Calculate pagination
+  const startIndex = (currentPage - 1) * notesPerPage
+  const endIndex = startIndex + notesPerPage
+  const currentNotes = notes.slice(startIndex, endIndex)
+  const totalPages = Math.ceil(notes.length / notesPerPage)
 
   // Infinite scroll states
   const [displayedNotes, setDisplayedNotes] = useState([])
@@ -72,25 +76,63 @@ const Home = () => {
     return () => observer.disconnect()
   }, [enabled, hasMore, displayedNotes])
 
-  const loadMoreNotes = async () => {
-    if (isLoadingMore) return 
-    s
-  setIsLoadingMore(true)
 
-     await new Promise(resolve => setTimeout(resolve, 500))
+  const handleSearch = async (query) => {
+    if (!query.trim()) {
+      fetchNotes()
+      return
+    }
+
+    try {
+      setIsSearching(true)
+      setError("")
+      const searchResults = await noteService.searchNotes(user.uid, query.trim())
+      setNotes(searchResults)
+    } catch (error) {
+      console.error("Error searching notes:", error)
+      setError("Failed to search notes. Please try again.")
+    } finally {
+      setIsSearching(false)
+    }
+  }
+
+useEffect(() => {
+  return () => {
+    if (searchTimeOutRef.current) {
+      clearTimeout(searchTimeOutRef.current)
+    }
+  }
+}, [])
+
+  const debouncedSearch = (query) => {
+    if (searchTimeOutRef.current) {
+      clearTimeout(searchTimeOutRef.current)
+    }
+
+    searchTimeOutRef.current = setTimeout(() => {
+      handleSearch(query)
+    }, 500)
+  }
+
+
+  const loadMoreNotes = async () => {
+    if (isLoadingMore) return
+    setIsLoadingMore(true)
+
+    await new Promise(resolve => setTimeout(resolve, 500))
     const currentLength = displayedNotes.length
     const nextBatch = notes.slice(currentLength, currentLength + notesPerPage)
-    
+
     if (nextBatch.length > 0) {
       setDisplayedNotes([...displayedNotes, ...nextBatch])
     }
-    
+
     if (currentLength + nextBatch.length >= notes.length) {
       setHasMore(false)
     }
 
 
-  setIsLoadingMore(false)
+    setIsLoadingMore(false)
   }
 
   const fetchNotes = async () => {
@@ -169,7 +211,7 @@ const Home = () => {
         setEditingNoteId(null)
         return
       }
-      
+
       await noteService.updateNote(noteId, editText.trim())
       setNotes(notes.map(n => (n.id === noteId ? { ...n, text: editText.trim() } : n)))
       if (enabled) {
@@ -192,12 +234,12 @@ const Home = () => {
 
     try {
       setError("")
-      
+
       const noteToDelete = notes.find(n => n.id === noteId)
       if (!noteToDelete?.isMock) {
         await noteService.deleteNote(noteId)
       }
-      
+
       setNotes(notes.filter(note => note.id !== noteId))
       if (enabled) {
         setDisplayedNotes(displayedNotes.filter(note => note.id !== noteId))
@@ -240,9 +282,38 @@ const Home = () => {
         </div>
       )}
 
-        <div>
-          <input type="search" placeholder='Search Notes...' className='border w-[60vw] py-1 px-4 rounded-2xl focus-within:border-blue-400'/>
-        </div>
+     <div className="relative w-full max-w-2xl">
+  <input
+    type="text"
+    placeholder='Search Notes...'
+    value={searchQuery}
+    onChange={(e) => {
+      setSearchQuery(e.target.value)
+      debouncedSearch(e.target.value)
+    }}
+    className='border w-full py-2 px-4 pr-20 rounded-2xl focus:outline-none focus:border-blue-400 transition'
+  />
+  {isSearching && (
+    <div className="absolute right-12 top-1/2 -translate-y-1/2">
+      <div className="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+    </div>
+  )}
+  {searchQuery && (
+    <button
+      onClick={() => {
+        setSearchQuery("")
+        if (searchTimeOutRef.current) {
+          clearTimeout(searchTimeOutRef.current)
+        }
+        fetchNotes()
+      }}
+      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xl font-bold"
+    >
+      ✕
+    </button>
+  )}
+</div>
+
       <div className="w-full flex items-center justify-center relative">
         <div className="flex flex-col gap-4 w-full max-w-4xl bg-white p-6 rounded-xl shadow-md">
           <div className="flex flex-col gap-2">
@@ -407,16 +478,16 @@ const Home = () => {
 
             {/* Infinite Scroll Loader */}
             {enabled && (
-  <div ref={loaderRef} className="text-center py-6">
-    {isLoadingMore ? (
-      <div className="text-blue-600 text-sm font-semibold animate-pulse">Loading more notes...</div>
-    ) : hasMore ? (
-      <div className="text-gray-400 text-sm">Scroll for more...</div>
-    ) : (
-      <div className="text-gray-500 text-sm">No more notes to load</div>
-    )}
-  </div>
-)}
+              <div ref={loaderRef} className="text-center py-6">
+                {isLoadingMore ? (
+                  <div className="text-blue-600 text-sm font-semibold animate-pulse">Loading more notes...</div>
+                ) : hasMore ? (
+                  <div className="text-gray-400 text-sm">Scroll for more...</div>
+                ) : (
+                  <div className="text-gray-500 text-sm">No more notes to load</div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
