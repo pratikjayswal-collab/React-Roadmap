@@ -77,6 +77,24 @@ const Home = () => {
   }, [enabled, hasMore, displayedNotes])
 
 
+  const retryApiCall = async (apiFunction, maxRetries = 3) => {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await apiFunction()
+    } catch (error) {
+      console.log(`Attempt ${i + 1} failed. Retrying...`)
+      
+      if (i === maxRetries - 1) {
+        // Last attempt failed, throw error
+        throw error
+      }
+      
+      // Wait before retrying (1 second)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+    }
+  }
+}
+
   const handleSearch = async (query) => {
     if (!query.trim()) {
       fetchNotes()
@@ -139,7 +157,7 @@ useEffect(() => {
     try {
       setLoading(true)
       setError("")
-      const userNotes = await noteService.getNotes(user.uid)
+      const userNotes = await retryApiCall(()=> noteService.getNotes(user.uid))
       setNotes(userNotes)
     } catch (error) {
       console.error("Error fetching notes:", error);
@@ -157,7 +175,7 @@ useEffect(() => {
 
     try {
       setError("")
-      const newNote = await noteService.addNote(user.uid, note.trim())
+      const newNote = await retryApiCall(()=> noteService.addNote(user.uid, note.trim()))
       setNotes([newNote, ...notes])
       setNote("")
 
@@ -212,7 +230,7 @@ useEffect(() => {
         return
       }
 
-      await noteService.updateNote(noteId, editText.trim())
+      await retryApiCall(()=> noteService.updateNote(noteId, editText.trim()))
       setNotes(notes.map(n => (n.id === noteId ? { ...n, text: editText.trim() } : n)))
       if (enabled) {
         setDisplayedNotes(displayedNotes.map(n => (n.id === noteId ? { ...n, text: editText.trim() } : n)))
@@ -237,7 +255,7 @@ useEffect(() => {
 
       const noteToDelete = notes.find(n => n.id === noteId)
       if (!noteToDelete?.isMock) {
-        await noteService.deleteNote(noteId)
+        await retryApiCall(()=> noteService.deleteNote(noteId))
       }
 
       setNotes(notes.filter(note => note.id !== noteId))
